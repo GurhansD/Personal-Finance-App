@@ -1,6 +1,9 @@
 import { useState } from 'react'
 import { useStore } from '../store/useStore'
+import { useAuthStore } from '../store/useAuthStore'
 import { lessons, categories } from '../data/lessons'
+import { useToast } from '../components/Toast'
+import Confetti from '../components/Confetti'
 import { BookOpen, Clock, Zap, Trophy, ChevronRight, ChevronLeft, CheckCircle2, X, Star } from 'lucide-react'
 
 function LessonCard({ lesson, isCompleted, onClick }) {
@@ -267,25 +270,44 @@ function LessonViewer({ lesson, onClose, onComplete, isCompleted }) {
 
 export default function Learn() {
   const { user, completeLesson } = useStore()
+  const { currentUser, awardXp, addBadge } = useAuthStore()
+  const { addToast } = useToast()
   const [activeCategory, setActiveCategory] = useState('All')
   const [activeLesson, setActiveLesson] = useState(null)
+  const [confetti, setConfetti] = useState(false)
 
   const filtered = activeCategory === 'All'
     ? lessons
     : lessons.filter(l => l.category === activeCategory)
 
   const completedCount = user.completedLessons.length
-  const totalXp = user.xp
   const nextLessons = lessons.filter(l => !user.completedLessons.includes(l.id))
+
+  const handleComplete = (lessonId, xpReward) => {
+    completeLesson(lessonId, xpReward)
+    awardXp(xpReward, 'Lesson completed')
+    setConfetti(true)
+    setTimeout(() => setConfetti(false), 3100)
+    addToast({ type: 'xp', title: `+${xpReward} XP!`, message: 'Lesson complete — great work!' })
+    // Scholar badge if all lessons done
+    const newCount = user.completedLessons.length + 1
+    if (newCount >= lessons.length) {
+      addBadge('scholar')
+      addToast({ type: 'achievement', title: '🎓 Badge: Finance Scholar!', message: 'You completed all lessons!' })
+    }
+  }
 
   if (activeLesson) {
     return (
-      <LessonViewer
-        lesson={activeLesson}
-        isCompleted={user.completedLessons.includes(activeLesson.id)}
-        onClose={() => setActiveLesson(null)}
-        onComplete={completeLesson}
-      />
+      <>
+        <Confetti active={confetti} />
+        <LessonViewer
+          lesson={activeLesson}
+          isCompleted={user.completedLessons.includes(activeLesson.id)}
+          onClose={() => setActiveLesson(null)}
+          onComplete={handleComplete}
+        />
+      </>
     )
   }
 
