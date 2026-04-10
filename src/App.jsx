@@ -9,7 +9,7 @@ import Learn from './pages/Learn'
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/Personal-Finance-App">
       <Layout>
         <Routes>
           <Route path="/" element={<Dashboard />} />
