@@ -1,17 +1,20 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useStore } from '../store/useStore'
+import { useAuthStore, getLevelProgress } from '../store/useAuthStore'
 import {
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, BarChart, Bar, Legend
 } from 'recharts'
 import {
   TrendingUp, TrendingDown, Plus, ArrowUpRight, Zap,
-  Shield, Target, CreditCard, AlertCircle, CheckCircle2
+  Shield, Target, CreditCard, AlertCircle, CheckCircle2, Sword
 } from 'lucide-react'
 import {
   formatCurrency, getMonthlyIncome, getMonthlyExpenses,
   getSpendingByCategory, calcNetWorth, getFinancialHealthScore, CATEGORY_COLORS
 } from '../utils/finance'
+import { BOSSES } from '../data/bossData'
 import StatCard from '../components/StatCard'
 import Modal from '../components/Modal'
 
@@ -35,6 +38,8 @@ const CustomTooltip = ({ active, payload, label }) => {
 
 export default function Dashboard() {
   const { transactions, budgets, goals, debts, investments, netWorthHistory, addTransaction, user } = useStore()
+  const { currentUser } = useAuthStore()
+  const navigate = useNavigate()
   const [showAddTx, setShowAddTx] = useState(false)
   const [txForm, setTxForm] = useState({
     type: 'expense', category: 'Food', amount: '', description: '', date: new Date().toISOString().split('T')[0]
@@ -283,6 +288,57 @@ export default function Dashboard() {
           ))}
         </div>
       </div>
+
+      {/* Boss Battle CTA */}
+      {(() => {
+        const defeatedBosses = currentUser?.defeatedBosses || []
+        const nextBossIndex = BOSSES.findIndex(b => !defeatedBosses.includes(b.id))
+        const nextBoss = nextBossIndex !== -1 ? BOSSES[nextBossIndex] : null
+        if (!nextBoss) return (
+          <div className="relative overflow-hidden rounded-2xl p-5 border border-yellow-500/30"
+            style={{ background: 'linear-gradient(135deg, #1a1200, #2a1f00)' }}>
+            <div className="text-lg font-black text-yellow-400">🏆 All Bosses Defeated!</div>
+            <p className="text-sm text-slate-400 mt-1">You are the Finance Champion. All 5 bosses bow before you.</p>
+          </div>
+        )
+        return (
+          <div className="relative overflow-hidden rounded-2xl border cursor-pointer group"
+            style={{ borderColor: `${nextBoss.auraColor}40`, background: `linear-gradient(135deg, ${nextBoss.bgGradient[0]}, ${nextBoss.bgGradient[1]})` }}
+            onClick={() => navigate('/world-map')}>
+            {/* animated bg particles */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+              {[...Array(8)].map((_, i) => (
+                <div key={i} className="absolute rounded-full"
+                  style={{
+                    width: 4 + (i % 3) * 3, height: 4 + (i % 3) * 3,
+                    left: `${10 + i * 11}%`, top: `${20 + (i % 3) * 25}%`,
+                    backgroundColor: nextBoss.auraColor, opacity: 0.2,
+                    animation: `floatParticle ${2.5 + i * 0.4}s ease-in-out infinite`,
+                    animationDelay: `${i * 0.3}s`
+                  }} />
+              ))}
+            </div>
+            <div className="relative p-5 flex items-center gap-4">
+              <div className="text-4xl animate-float flex-shrink-0">
+                {['🐉','👻','😈','🗿','👾'][nextBossIndex]}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="text-xs font-bold uppercase tracking-wider mb-0.5"
+                  style={{ color: nextBoss.auraColor }}>⚔️ Next Boss Battle</div>
+                <div className="text-lg font-black text-white">{nextBoss.name}</div>
+                <div className="text-xs text-slate-400 italic">{nextBoss.world}</div>
+              </div>
+              <div className="flex-shrink-0 text-right">
+                <div className="text-xs text-slate-400">Reward</div>
+                <div className="font-black" style={{ color: nextBoss.auraColor }}>+{nextBoss.xpReward} XP</div>
+                <div className="text-xs font-bold text-yellow-400 mt-1 group-hover:translate-x-1 transition-transform">
+                  Fight →
+                </div>
+              </div>
+            </div>
+          </div>
+        )
+      })()}
 
       {/* Add Transaction Modal */}
       <Modal isOpen={showAddTx} onClose={() => setShowAddTx(false)} title="Add Transaction">

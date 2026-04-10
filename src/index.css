@@ -62,3 +62,153 @@
     overflow: hidden;
   }
 }
+
+/* ── Global game animations ──────────────────────────────── */
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes floatSlow {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-12px) rotate(3deg); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.85); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes bounceIn {
+  0%   { transform: scale(0) rotate(-15deg); opacity: 0; }
+  60%  { transform: scale(1.15) rotate(5deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.7; transform: scale(1.05); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes shakeX {
+  0%, 100% { transform: translateX(0); }
+  15%       { transform: translateX(-8px); }
+  30%       { transform: translateX(8px); }
+  45%       { transform: translateX(-6px); }
+  60%       { transform: translateX(6px); }
+  75%       { transform: translateX(-3px); }
+  90%       { transform: translateX(3px); }
+}
+
+@keyframes floatUp {
+  0%   { transform: translateX(-50%) translateY(0);    opacity: 1; }
+  100% { transform: translateX(-50%) translateY(-70px); opacity: 0; }
+}
+
+@keyframes slashAcross {
+  0%   { clip-path: inset(0 100% 0 0); opacity: 1; }
+  50%  { clip-path: inset(0 0% 0 0);   opacity: 1; }
+  100% { clip-path: inset(0 0 0 100%); opacity: 0; }
+}
+
+@keyframes floatParticle {
+  0%, 100% { transform: translateY(0)   scale(1);   opacity: 0.3; }
+  50%       { transform: translateY(-20px) scale(1.3); opacity: 0.6; }
+}
+
+@keyframes xpFlash {
+  0%   { background: #22c55e40; }
+  50%  { background: #22c55e90; }
+  100% { background: transparent; }
+}
+
+@keyframes gradientShift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes typewriter {
+  from { width: 0; }
+  to   { width: 100%; }
+}
+
+@keyframes blink {
+  0%, 100% { border-color: transparent; }
+  50%       { border-color: currentColor; }
+}
+
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 10px currentColor; }
+  50%       { box-shadow: 0 0 30px currentColor, 0 0 60px currentColor; }
+}
+
+@keyframes scanline {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+
+/* Utility classes for animations */
+.animate-float       { animation: float 3s ease-in-out infinite; }
+.animate-float-slow  { animation: floatSlow 5s ease-in-out infinite; }
+.animate-shimmer     { animation: shimmer 2s linear infinite; background-size: 200% auto; }
+.animate-slide-up    { animation: slideUp 0.4s ease-out; }
+.animate-slide-down  { animation: slideDown 0.4s ease-out; }
+.animate-fade-in     { animation: fadeIn 0.4s ease-out; }
+.animate-scale-in    { animation: scaleIn 0.3s ease-out; }
+.animate-bounce-in   { animation: bounceIn 0.6s ease-out; }
+.animate-shake-x     { animation: shakeX 0.5s ease-in-out; }
+.animate-spin        { animation: spin 1s linear infinite; }
+
+/* RPG shimmer text effect */
+.text-shimmer {
+  background: linear-gradient(90deg, #22c55e, #4ade80, #86efac, #22c55e);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 3s linear infinite;
+}
+
+/* Pixel-art crisp rendering */
+.pixel-art {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+/* Boss aura glow pulse */
+.boss-aura {
+  animation: glow 2s ease-in-out infinite;
+}
+
+/* Gradient animated background for game screens */
+.game-bg {
+  background: linear-gradient(135deg, #0a0f1a 0%, #0f1f35 50%, #0a0f1a 100%);
+  background-size: 200% 200%;
+  animation: gradientShift 8s ease infinite;
+}
