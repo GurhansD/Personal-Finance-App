@@ -1,10 +1,12 @@
 import { useState, useEffect, createContext, useContext, useCallback } from 'react'
 import { X, Zap, Trophy, AlertTriangle, CheckCircle2, Info } from 'lucide-react'
+import LevelUpModal from './LevelUpModal'
 
 const ToastContext = createContext(null)
 
 export function ToastProvider({ children }) {
   const [toasts, setToasts] = useState([])
+  const [levelUpData, setLevelUpData] = useState(null)
 
   const addToast = useCallback(({ type = 'info', title, message, duration = 4000 }) => {
     const id = Date.now() + Math.random()
@@ -19,9 +21,20 @@ export function ToastProvider({ children }) {
     setToasts(prev => prev.filter(t => t.id !== id))
   }, [])
 
+  const showToast = useCallback((message, type = 'info') => {
+    addToast({ type, title: message })
+  }, [addToast])
+
+  const showLevelUp = useCallback((level) => {
+    setLevelUpData({ level })
+  }, [])
+
   return (
-    <ToastContext.Provider value={{ addToast, removeToast }}>
+    <ToastContext.Provider value={{ addToast, removeToast, showToast, showLevelUp }}>
       {children}
+      {levelUpData && (
+        <LevelUpModal level={levelUpData.level} onClose={() => setLevelUpData(null)} />
+      )}
       <div className="fixed bottom-4 right-4 z-[100] flex flex-col gap-2 pointer-events-none">
         {toasts.map(toast => (
           <ToastItem key={toast.id} toast={toast} onRemove={removeToast} />

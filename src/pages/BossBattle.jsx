@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { BOSSES } from '../data/bossData'
 import PixelBoss from '../components/PixelBoss'
+import BattleIntro from '../components/BattleIntro'
 import { useAuthStore } from '../store/useAuthStore'
 import { useToast } from '../components/Toast'
 import { Sword, Shield, Heart, Zap, ChevronLeft, Star, RotateCcw, Trophy, X } from 'lucide-react'
@@ -147,6 +148,7 @@ export default function BossBattle() {
   const [resultData, setResultData] = useState(null)
   const [hpAnimBoss, setHpAnimBoss] = useState(false)
   const [hpAnimPlayer, setHpAnimPlayer] = useState(false)
+  const [showIntro, setShowIntro] = useState(true)
   const damageIdRef = useRef(0)
 
   // boss idle animation
@@ -246,6 +248,15 @@ export default function BossBattle() {
     <div className="text-center py-20 text-slate-400">
       Boss not found. <button onClick={() => navigate('/world-map')} className="text-brand-400 underline">Return to map</button>
     </div>
+  )
+
+  if (showIntro) return (
+    <BattleIntro
+      boss={boss}
+      playerName={currentUser?.name?.split(' ')[0] || 'Hero'}
+      playerAvatar={currentUser?.avatar || '🦁'}
+      onComplete={() => setShowIntro(false)}
+    />
   )
 
   const q = questions[qIndex]
