@@ -16,6 +16,7 @@ import Profile from './pages/Profile'
 import Bills from './pages/Bills'
 import WorldMap from './pages/WorldMap'
 import BossBattle from './pages/BossBattle'
+import SkillTree from './pages/SkillTree'
 import { ToastProvider } from './components/Toast'
 
 function AppRoutes() {
@@ -40,6 +41,7 @@ function AppRoutes() {
         <Route path="/bills" element={<Bills />} />
         <Route path="/world-map" element={<WorldMap />} />
         <Route path="/boss/:bossId" element={<BossBattle />} />
+        <Route path="/skill-tree" element={<SkillTree />} />
       </Routes>
     </Layout>
   )
