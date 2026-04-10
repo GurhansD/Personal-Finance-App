@@ -1,10 +1,10 @@
 import { NavLink, useLocation } from 'react-router-dom'
 import {
   LayoutDashboard, Wallet, Target, CreditCard, TrendingUp,
-  GraduationCap, Menu, X, Zap, ChevronRight
+  GraduationCap, Menu, X, Zap, ChevronRight, Trophy, Flame, Brain, LogOut
 } from 'lucide-react'
 import { useState } from 'react'
-import { useStore } from '../store/useStore'
+import { useAuthStore, getLevelProgress } from '../store/useAuthStore'
 
 const navItems = [
   { path: '/', icon: LayoutDashboard, label: 'Dashboard' },
@@ -13,18 +13,18 @@ const navItems = [
   { path: '/debt', icon: CreditCard, label: 'Debt' },
   { path: '/invest', icon: TrendingUp, label: 'Invest' },
   { path: '/learn', icon: GraduationCap, label: 'Learn' },
+  { path: '/challenges', icon: Flame, label: 'Challenges', badge: 'NEW' },
+  { path: '/leaderboard', icon: Trophy, label: 'Leaderboard' },
+  { path: '/coach', icon: Brain, label: 'AI Coach', badge: 'AI' },
 ]
-
-const levelThresholds = [0, 100, 300, 600, 1000, 1500, 2200, 3000, 4000, 5000]
 
 export default function Layout({ children }) {
   const [mobileOpen, setMobileOpen] = useState(false)
-  const { user } = useStore()
+  const [showUserMenu, setShowUserMenu] = useState(false)
+  const { currentUser, signOut } = useAuthStore()
   const location = useLocation()
 
-  const currentLevelXp = levelThresholds[user.level - 1] || 0
-  const nextLevelXp = levelThresholds[user.level] || currentLevelXp + 1000
-  const levelProgress = ((user.xp - currentLevelXp) / (nextLevelXp - currentLevelXp)) * 100
+  const { level, progress } = getLevelProgress(currentUser?.xp || 0)
 
   return (
     <div className="min-h-screen bg-slate-950 text-white flex">
@@ -50,60 +50,83 @@ export default function Layout({ children }) {
           </div>
 
           {/* User XP Card */}
-          <div className="mx-4 mt-4 p-4 rounded-2xl bg-gradient-to-br from-brand-500/10 to-brand-600/5 border border-brand-500/20">
+          <div
+            className="mx-4 mt-4 p-4 rounded-2xl bg-gradient-to-br from-brand-500/10 to-brand-600/5 border border-brand-500/20 cursor-pointer hover:border-brand-500/40 transition-all"
+            onClick={() => setShowUserMenu(!showUserMenu)}
+          >
             <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center text-sm font-bold">
-                {user.name.charAt(0)}
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center text-xl flex-shrink-0">
+                {currentUser?.avatar || '🦁'}
               </div>
               <div className="flex-1 min-w-0">
-                <div className="text-sm font-semibold truncate">{user.name}</div>
+                <div className="text-sm font-semibold truncate">{currentUser?.name || 'User'}</div>
                 <div className="text-xs text-brand-400 flex items-center gap-1">
-                  <span>Level {user.level}</span>
+                  <span>Level {level}</span>
                   <span>·</span>
-                  <span>{user.xp} XP</span>
+                  <span>{(currentUser?.xp || 0).toLocaleString()} XP</span>
                 </div>
               </div>
             </div>
             <div className="space-y-1">
               <div className="flex justify-between text-xs text-slate-400">
-                <span>Level {user.level}</span>
-                <span>Level {user.level + 1}</span>
+                <span>Level {level}</span>
+                <span>Level {level + 1}</span>
               </div>
               <div className="h-1.5 bg-slate-700 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-gradient-to-r from-brand-400 to-brand-500 rounded-full transition-all duration-500"
-                  style={{ width: `${Math.min(levelProgress, 100)}%` }}
+                  style={{ width: `${Math.min(progress, 100)}%` }}
                 />
               </div>
             </div>
             <div className="mt-2 flex items-center gap-2 text-xs text-slate-400">
-              <span>🔥 {user.streak} day streak</span>
+              <span>🔥 {currentUser?.streak || 1} day streak</span>
               <span>·</span>
-              <span>✅ {user.completedLessons.length} lessons</span>
+              <span>🏆 {(currentUser?.badges || []).length} badges</span>
             </div>
           </div>
 
+          {/* User dropdown */}
+          {showUserMenu && (
+            <div className="mx-4 mt-2 rounded-xl bg-slate-800 border border-white/10 overflow-hidden">
+              <button
+                onClick={() => { signOut(); setShowUserMenu(false) }}
+                className="w-full flex items-center gap-3 px-4 py-3 text-sm text-slate-400 hover:text-red-400 hover:bg-red-400/10 transition-all"
+              >
+                <LogOut className="w-4 h-4" />
+                Sign Out
+              </button>
+            </div>
+          )}
+
           {/* Navigation */}
-          <nav className="flex-1 p-4 space-y-1 mt-2">
-            {navItems.map(({ path, icon: Icon, label }) => (
+          <nav className="flex-1 p-4 space-y-0.5 mt-2 overflow-y-auto">
+            {navItems.map(({ path, icon: Icon, label, badge }) => (
               <NavLink
                 key={path}
                 to={path}
                 onClick={() => setMobileOpen(false)}
                 className={({ isActive }) => `
-                  flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium
+                  flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium
                   transition-all duration-200 group
                   ${isActive
-                    ? 'bg-brand-500/20 text-brand-400 shadow-glow/20'
+                    ? 'bg-brand-500/20 text-brand-400'
                     : 'text-slate-400 hover:text-white hover:bg-white/5'
                   }
                 `}
               >
                 {({ isActive }) => (
                   <>
-                    <Icon className={`w-5 h-5 flex-shrink-0 transition-colors ${isActive ? 'text-brand-400' : 'group-hover:text-white'}`} />
+                    <Icon className={`w-4 h-4 flex-shrink-0 transition-colors ${isActive ? 'text-brand-400' : 'group-hover:text-white'}`} />
                     <span className="flex-1">{label}</span>
-                    {isActive && <ChevronRight className="w-4 h-4 text-brand-400/60" />}
+                    {badge && !isActive && (
+                      <span className={`text-xs px-1.5 py-0.5 rounded-md font-bold ${
+                        badge === 'AI' ? 'bg-purple-500/20 text-purple-400' : 'bg-brand-500/20 text-brand-400'
+                      }`}>
+                        {badge}
+                      </span>
+                    )}
+                    {isActive && <ChevronRight className="w-3.5 h-3.5 text-brand-400/60" />}
                   </>
                 )}
               </NavLink>
@@ -140,6 +163,10 @@ export default function Layout({ children }) {
           <div className="flex items-center gap-2">
             <Zap className="w-5 h-5 text-brand-400" />
             <span className="font-bold text-white">Finwise</span>
+          </div>
+          <div className="ml-auto flex items-center gap-2 text-xs text-brand-400">
+            <span>{currentUser?.avatar}</span>
+            <span className="font-semibold">{(currentUser?.xp || 0).toLocaleString()} XP</span>
           </div>
         </header>
 
