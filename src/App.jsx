@@ -12,6 +12,7 @@ import Learn from './pages/Learn'
 import Leaderboard from './pages/Leaderboard'
 import Challenges from './pages/Challenges'
 import Coach from './pages/Coach'
+import Profile from './pages/Profile'
 import { ToastProvider } from './components/Toast'
 
 function AppRoutes() {
@@ -32,6 +33,7 @@ function AppRoutes() {
         <Route path="/leaderboard" element={<Leaderboard />} />
         <Route path="/challenges" element={<Challenges />} />
         <Route path="/coach" element={<Coach />} />
+        <Route path="/profile" element={<Profile />} />
       </Routes>
     </Layout>
   )
