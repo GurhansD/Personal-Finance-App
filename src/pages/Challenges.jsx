@@ -4,6 +4,7 @@ import { useStore } from '../store/useStore'
 import { getDailyChallenges, getWeeklyChallenges, BADGES } from '../data/challenges'
 import { useToast } from '../components/Toast'
 import Confetti from '../components/Confetti'
+import MoneyRain from '../components/MoneyRain'
 import { Zap, Trophy, Flame, CheckCircle2, Clock, Star, Target } from 'lucide-react'
 
 function ChallengeCard({ challenge, isCompleted, onComplete }) {
@@ -95,6 +96,7 @@ export default function Challenges() {
   const { currentUser, completeChallenge, addBadge } = useAuthStore()
   const { addToast } = useToast()
   const [confetti, setConfetti] = useState(false)
+  const [moneyRain, setMoneyRain] = useState(false)
   const [activeTab, setActiveTab] = useState('challenges')
 
   const completed = currentUser?.completedChallenges || []
@@ -118,6 +120,8 @@ export default function Challenges() {
     if (newCount >= 10 && !badges.includes('challenger')) {
       addBadge('challenger')
       addToast({ type: 'achievement', title: '🏆 Badge Earned!', message: 'Challenger — 10 challenges complete!' })
+      setMoneyRain(true)
+      setTimeout(() => setMoneyRain(false), 100)
     }
   }
 
@@ -128,6 +132,7 @@ export default function Challenges() {
   return (
     <div className="space-y-6">
       <Confetti active={confetti} />
+      {moneyRain && <MoneyRain />}
 
       {/* Header */}
       <div>
