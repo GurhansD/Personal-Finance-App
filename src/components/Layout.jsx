@@ -1,7 +1,7 @@
 import { NavLink, useLocation } from 'react-router-dom'
 import {
   LayoutDashboard, Wallet, Target, CreditCard, TrendingUp,
-  GraduationCap, Menu, X, Zap, ChevronRight, Trophy, Flame, Brain, LogOut, User, Repeat
+  GraduationCap, Menu, X, Zap, ChevronRight, Trophy, Flame, Brain, LogOut, User, Repeat, Sword, Map
 } from 'lucide-react'
 import { useState } from 'react'
 import { useAuthStore, getLevelProgress } from '../store/useAuthStore'
@@ -17,6 +17,7 @@ const navItems = [
   { path: '/leaderboard', icon: Trophy, label: 'Leaderboard' },
   { path: '/coach', icon: Brain, label: 'AI Coach', badge: 'AI' },
   { path: '/bills', icon: Repeat, label: 'Bill Tracker' },
+  { path: '/world-map', icon: Map, label: 'Boss Battles', badge: '⚔️' },
   { path: '/profile', icon: User, label: 'My Profile' },
 ]
 

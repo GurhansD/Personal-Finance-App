@@ -14,6 +14,8 @@ import Challenges from './pages/Challenges'
 import Coach from './pages/Coach'
 import Profile from './pages/Profile'
 import Bills from './pages/Bills'
+import WorldMap from './pages/WorldMap'
+import BossBattle from './pages/BossBattle'
 import { ToastProvider } from './components/Toast'
 
 function AppRoutes() {
@@ -36,6 +38,8 @@ function AppRoutes() {
         <Route path="/coach" element={<Coach />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/bills" element={<Bills />} />
+        <Route path="/world-map" element={<WorldMap />} />
+        <Route path="/boss/:bossId" element={<BossBattle />} />
       </Routes>
     </Layout>
   )

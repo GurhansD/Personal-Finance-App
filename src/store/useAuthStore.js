@@ -113,6 +113,24 @@ export const useAuthStore = create(
         set({ currentUser: updated, _users: _users.map(u => u.id === updated.id ? updated : u) })
       },
 
+      defeatBoss: (bossId, xpReward) => {
+        const { currentUser, _users = [] } = get()
+        if (!currentUser) return
+        const alreadyDefeated = (currentUser.defeatedBosses || []).includes(bossId)
+        const newXp = (currentUser.xp || 0) + (alreadyDefeated ? Math.floor(xpReward / 4) : xpReward)
+        const updated = {
+          ...currentUser,
+          xp: newXp,
+          weeklyXp: (currentUser.weeklyXp || 0) + xpReward,
+          monthlyXp: (currentUser.monthlyXp || 0) + xpReward,
+          level: calcLevel(newXp),
+          defeatedBosses: alreadyDefeated
+            ? currentUser.defeatedBosses
+            : [...(currentUser.defeatedBosses || []), bossId],
+        }
+        set({ currentUser: updated, _users: _users.map(u => u.id === updated.id ? updated : u) })
+      },
+
       _users: [],
     }),
     { name: 'finwise-auth-v2' }
